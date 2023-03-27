@@ -210,7 +210,7 @@ def value_stdev(s):
 def line(x, a, b):
     return get_var(a) * x.agg(get_var) + get_var(b)
 
-def cure_fit(xdata, ydata, f=line):
+def curve_fit(xdata, ydata, f=line):
     params, cov = sc.curve_fit(line, xdata=xdata.agg(get_var), ydata=ydata.agg(get_var))
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
