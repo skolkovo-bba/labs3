@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from statistics import stdev
-from scipy.optimize import curve_fit
+import scipy.optimize as sc
 
 class Value:
     var: float
@@ -208,8 +208,9 @@ def value_stdev(s):
     return Value(s.mean(), stdev(s))
 
 def line(x, a, b):
-    return a * x + b
+    return get_var(a) * x.agg(get_var) + get_var(b)
 
-def get_line_values(xdata, ydata):
-    params, cov = curve_fit(line, xdata=xdata, ydata=ydata)
-    return Value(params[0], np.sqrt(cov[0][0])), Value(params[1], np.sqrt(cov[1][1]))
+def cure_fit(xdata, ydata, f=line):
+    params, cov = sc.curve_fit(line, xdata=xdata.agg(get_var), ydata=ydata.agg(get_var))
+
+    return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
