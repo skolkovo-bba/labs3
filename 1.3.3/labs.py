@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from statistics import stdev
+import statistics as stat
 import scipy.optimize as sc
 
 class Value:
@@ -182,6 +182,14 @@ def const_err(err):
 
     return f
 
+def err(x):
+    if isinstance(x, Value):
+        return x.err
+    elif isinstance(x, int) or isinstance(x, float):
+        return float(0)
+    else:
+        raise TypeError
+
 def get_err(x: Value):
     if isinstance(x, Value):
         return x.err
@@ -196,21 +204,20 @@ def get_var(x: Value):
     elif isinstance(x, int) or isinstance(x, float):
         return float(x)
     else:
-        raise TypeError
+        raise TypeError()
 
 def value_from_series(s):
     if len(s) <= 1:
         raise IndexError
     return Value(np.mean(s), np.sqrt(np.sum((s - np.mean(s)) ** 2) / len(s) / (len(s) - 1)))
 
-
-def value_stdev(s):
-    return Value(s.mean(), stdev(s))
+def mean(s):
+    return stat.mean(s)
 
 def line(x, a, b):
     return get_var(a) * x.agg(get_var) + get_var(b)
 
 def curve_fit(xdata, ydata, f=line):
-    params, cov = sc.curve_fit(line, xdata=xdata.agg(get_var), ydata=ydata.agg(get_var))
+    params, cov = sc.curve_fit(f, xdata=xdata.agg(get_var), ydata=ydata.agg(get_var))
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
