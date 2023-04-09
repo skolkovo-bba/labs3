@@ -221,3 +221,5 @@ def curve_fit(f, xdata, ydata):
     params, cov = sc.curve_fit(f, xdata=xdata.agg(get_var), ydata=ydata.agg(get_var))
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
+
+#TODO Проверка работы со всему разными функциями из numpy
