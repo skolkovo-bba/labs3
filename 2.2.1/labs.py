@@ -218,7 +218,11 @@ def line(x, a, b):
     return get_var(a) * x.agg(get_var) + get_var(b)
 
 def curve_fit(f, xdata, ydata):
-    params, cov = sc.curve_fit(f, xdata=xdata.agg(get_var), ydata=ydata.agg(get_var))
+    if isinstance(xdata, pd.Series):
+        xdata = xdata.agg(get_var)
+    if isinstance(ydata, pd.Series):
+        ydata = ydata.agg(get_var)
+    params, cov = sc.curve_fit(f, xdata=xdata, ydata=ydata)
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
 
