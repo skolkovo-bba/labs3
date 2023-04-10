@@ -223,12 +223,12 @@ def curve_fit(f, x, y):
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
 
 def hi2(x, y):
-    def mean_w(x):
-        W = sum((1 / (v.err ** 2) for v in x))
-        return sum((1 / (v.err ** 2) * v for v in x)) / sum((1 / (v.err ** 2) for v in x))
+    mean_w = lambda x: sum((1 / (v.err ** 2) * v for v in x)) / sum((1 / (v.err ** 2) for v in x))
+
+    print(mean_w(x * y))
 
     k = (mean_w(x * y) - mean_w(x) * mean_w(y)) / (mean_w(x ** 2) - mean_w(x) ** 2)
-    b = mean_w(y) - k * mean(x)
+    b = mean_w(y) - k * mean_w(x)
 
     return k, b
 
