@@ -216,10 +216,8 @@ def line(x, a, b):
 def curve_fit(f, x, y):
     if isinstance(x, pd.Series):
         x = x.agg(var)
-        xerr = x.agg(err)
     if isinstance(y, pd.Series):
         y = y.agg(var)
-        xerr = x.agg(err)
     params, cov = sc.curve_fit(f, x=x, y=y)
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
