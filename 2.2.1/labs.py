@@ -182,14 +182,6 @@ def const_err(err):
 
     return f
 
-def err(x):
-    if isinstance(x, Value):
-        return x.err
-    elif isinstance(x, int) or isinstance(x, float):
-        return float(0)
-    else:
-        raise TypeError
-
 def get_err(x: Value):
     if isinstance(x, Value):
         return x.err
@@ -206,6 +198,9 @@ def get_var(x: Value):
     else:
         raise TypeError()
 
+err = get_err
+var = get_var
+
 def value_from_series(s):
     if len(s) <= 1:
         raise IndexError
@@ -215,15 +210,28 @@ def mean(s):
     return stat.mean(s)
 
 def line(x, a, b):
-    return get_var(a) * x.agg(get_var) + get_var(b)
+    return var(a) * x.agg(var) + var(b)
 
-def curve_fit(f, xdata, ydata):
-    if isinstance(xdata, pd.Series):
-        xdata = xdata.agg(get_var)
-    if isinstance(ydata, pd.Series):
-        ydata = ydata.agg(get_var)
-    params, cov = sc.curve_fit(f, xdata=xdata, ydata=ydata)
+
+def curve_fit(f, x, y):
+    if isinstance(x, pd.Series):
+        x = x.agg(var)
+        xerr = x.agg(err)
+    if isinstance(y, pd.Series):
+        y = y.agg(var)
+        xerr = x.agg(err)
+    params, cov = sc.curve_fit(f, x=x, y=y)
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
+
+def hi2(x, y):
+    def mean_w(x):
+        W = sum((1 / (v.err ** 2) for v in x))
+        return sum((1 / (v.err ** 2) * v for v in x)) / sum((1 / (v.err ** 2) for v in x))
+
+    k = (mean_w(x * y) - mean_w(x) * mean_w(y)) / (mean_w(x ** 2) - mean_w(x) ** 2)
+    b = mean_w(y) - k * mean(x)
+
+    return k, b
 
 #TODO Проверка работы со всему разными функциями из numpy
