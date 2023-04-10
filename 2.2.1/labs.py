@@ -218,7 +218,7 @@ def curve_fit(f, x, y):
         x = x.agg(var)
     if isinstance(y, pd.Series):
         y = y.agg(var)
-    params, cov = sc.curve_fit(f, x=x, y=y)
+    params, cov = sc.curve_fit(f, xdata=x, ydata=y)
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
 
