@@ -13,7 +13,7 @@ class Value:
 
     @property
     def r_err(self):
-        if abs(self.var) < 0.00000001:
+        if abs(self.var) < 0.00000000000000000001:
             return 0.0
         else:
             return abs(self.err / self.var)
@@ -207,7 +207,7 @@ def value_from_series(s):
     return Value(np.mean(s), np.sqrt(np.sum((s - np.mean(s)) ** 2) / len(s) / (len(s) - 1)))
 
 def mean(s):
-    return stat.mean(s)
+    return stat.mean(s.agg(var))
 
 def line(x, a, b):
     return var(a) * x.agg(var) + var(b)
@@ -223,9 +223,13 @@ def curve_fit(f, x, y):
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
 
 def hi2(x, y):
-    mean_w = lambda x: sum((1 / (v.err ** 2) for v in x)) / sum((1 / (v.err ** 2) for v in x))
+    x = x.agg(var)
+    y = y.agg(var)
+    def mean_w(x):
+        sum((1 / (v.err ** 2) for v in x)) / sum((1 / (v.err ** 2) for v in x))
+    mean_w.x = mean_w
 
-    print(mean_w(x * y))
+    print(x, mean_w(x ** 2), mean_w(x) ** 2)
 
     k = (mean_w(x * y) - mean_w(x) * mean_w(y)) / (mean_w(x ** 2) - mean_w(x) ** 2)
     b = mean_w(y) - k * mean_w(x)
