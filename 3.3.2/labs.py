@@ -30,13 +30,23 @@ class Value:
         r = 1
         while round(self.err, r) == 0 and r < 30:
             r += 1
-        a = '{:6f}'.format(round(self.var, r))
-        while a[-1] == "0":
-            a = a[:-1]
-        b = '{:6f}'.format(round(self.err, r))
-        while b[-1] == "0":
-            b = b[:-1]
-        return f"({a}\u00B1{b})"
+        print(r)
+        if True:
+            a = '{:6f}'.format(round(self.var, r))
+            while a[-1] == "0":
+                a = a[:-1]
+            b = '{:6f}'.format(round(self.err, r))
+            while b[-1] == "0":
+                b = b[:-1]
+            return f"({a}\u00B1{b})"
+        else:
+            a = '{:6f}'.format(round(self.var * 10 ** r, r))
+            while a[-1] == "0":
+                a = a[:-1]
+            b = '{:6f}'.format(round(self.err * 10 ** r, r))
+            while b[-1] == "0":
+                b = b[:-1]
+            return f"({a}\u00B1{b}E{r})"
     
     def __repr__(self):
         return str(self)
@@ -210,14 +220,14 @@ def mean(s):
     return stat.mean(s.agg(var))
 
 def line(x, a, b):
-    return var(a) * x.agg(var) + var(b)
+    return var(a) * x.transform(var) + var(b)
 
 
-def curve_fit(f, x, y):
+def mls(f, x, y):
     if isinstance(x, pd.Series):
-        x = x.agg(var)
+        x = x.transform(var)
     if isinstance(y, pd.Series):
-        y = y.agg(var)
+        y = y.transform(var)
     params, cov = sc.curve_fit(f, xdata=x, ydata=y)
 
     return (Value(params[i], np.sqrt(cov[i][i])) for i in range(len(params)))
