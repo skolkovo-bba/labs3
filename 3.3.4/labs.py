@@ -5,6 +5,7 @@ import scipy.optimize as sc
 
 e = 1,6021766208 * 10 ** -19
 
+
 class Value:
     var: float
     err: float
