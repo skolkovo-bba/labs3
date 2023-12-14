@@ -3,6 +3,9 @@ import pandas as pd
 import statistics as stat
 import scipy.optimize as sc
 
+e = 1,6021766208 * 10 ** -19
+
+
 class Value:
     var: float
     err: float
@@ -30,15 +33,15 @@ class Value:
         r = 1
         while round(self.err, r) == 0 and r < 30:
             r += 1
-        #print(r)
+        ten = round(np.log10(np.abs(self.var)))
+        if ten < -40 or -4 < ten < 4:
+            ten = 0
         if True:
-            a = '{:6f}'.format(round(self.var, r))
-            while a[-1] == "0":
-                a = a[:-1]
-            b = '{:6f}'.format(round(self.err, r))
-            while b[-1] == "0":
-                b = b[:-1]
-            return f"({a}\u00B1{b})"
+            a = round(self.var * 10 ** (-ten), r)
+            
+            b = round(self.err * 10 ** (-ten), r)
+            
+            return f"({a}\u00B1{b}E{ten})" if ten != 0 else f"({a}\u00B1{b})"
         else:
             a = '{:6f}'.format(round(self.var * 10 ** r, r))
             while a[-1] == "0":
