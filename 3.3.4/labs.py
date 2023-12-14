@@ -2,8 +2,9 @@ import numpy as np
 import pandas as pd
 import statistics as stat
 import scipy.optimize as sc
+import math
 
-e = 1,6021766208 * 10 ** -19
+q_e = 1.6021766208 * 10 ** -19
 
 
 class Value:
@@ -30,26 +31,25 @@ class Value:
 
 
     def __str__(self):
-        r = 1
-        while round(self.err, r) == 0 and r < 30:
+        if np.log10(np.abs(self.var)) < 0:
+            ten = int(np.ceil(np.abs(np.log10(np.abs(self.var)))) * np.sign(np.log10(np.abs(self.var))))
+        else:
+            ten = int(np.floor(np.abs(np.log10(np.abs(self.var)))))
+        r = 0
+        while str(round(self.err * 10 ** (-ten), r))[-1] == "0" and r < 6:
             r += 1
-        ten = round(np.log10(np.abs(self.var)))
-        if ten < -40 or -4 < ten < 4:
+
+        
+        if ten < -40 or -2 < ten < 2:
             ten = 0
-        if True:
-            a = round(self.var * 10 ** (-ten), r)
-            
-            b = round(self.err * 10 ** (-ten), r)
-            
+
+        a = round(self.var * 10 ** (-ten), r)
+        
+        b = round(self.err * 10 ** (-ten), r)
+        if r < 6:
             return f"({a}\u00B1{b}E{ten})" if ten != 0 else f"({a}\u00B1{b})"
         else:
-            a = '{:6f}'.format(round(self.var * 10 ** r, r))
-            while a[-1] == "0":
-                a = a[:-1]
-            b = '{:6f}'.format(round(self.err * 10 ** r, r))
-            while b[-1] == "0":
-                b = b[:-1]
-            return f"({a}\u00B1{b}E{r})"
+            return f"({a}E{ten})" if ten != 0 else f"({a})"
     
     def __repr__(self):
         return str(self)
@@ -121,7 +121,7 @@ class Value:
         elif isinstance(other, int) or isinstance(other, float):
             return Value(self.var * other, r_err=self.r_err)
         else:
-            raise TypeError
+            raise TypeError(f"{type(self)} and {type(other)}")
     
     def __rmul__(self, other):
         if isinstance(other, Value):
@@ -168,7 +168,7 @@ class Value:
         elif isinstance(other, int) or isinstance(other, float):
             return self.var < other
         else:
-            raise TypeError
+            raise TypeError(f"{type(self)} and {type(other)}")
         
     def __gt__(self, other):
         if isinstance(other, Value):
