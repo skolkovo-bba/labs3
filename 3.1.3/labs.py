@@ -270,6 +270,9 @@ def errorbar(x, y, title, xlabel, ylabel, fontsize=25):
 
     return k, b
 
+def read_csv(name):
+    pass
+
 #TODO Проверка работы со всему разными функциями из numpy - Вроде все робит
 #TODO Функции для замены matplotlib - Стоит допилить функицонал для нескольких графиков на одной плоскости
 #TODO Правильный вывод чисел - Походу сделано
