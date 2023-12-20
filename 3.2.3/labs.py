@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import statistics as stat
 import scipy.optimize as sc
-import math
 
 q_e = 1.6021766208 * 10 ** -19
 
@@ -23,6 +22,10 @@ class Value:
             return abs(self.err / self.var)
 
     def __init__(self, var, err=0.0, r_err=None):
+        if isinstance(var, pd.DataFrame):
+            ans = var.copy()
+            for col in var.columns:
+                ans[col] = var[col].transform(Value)
         self.var = float(var)
         if r_err is None:
             self.err = abs(err)

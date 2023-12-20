@@ -2,9 +2,8 @@ import numpy as np
 import pandas as pd
 import statistics as stat
 import scipy.optimize as sc
-import math
+import matplotlib.pyplot as plt
 
-q_e = 1.6021766208 * 10 ** -19
 
 
 class Value:
@@ -31,25 +30,27 @@ class Value:
 
 
     def __str__(self):
+        # Определение e
         if np.log10(np.abs(self.var)) < 0:
             ten = int(np.ceil(np.abs(np.log10(np.abs(self.var)))) * np.sign(np.log10(np.abs(self.var))))
         else:
             ten = int(np.floor(np.abs(np.log10(np.abs(self.var)))))
+
+        # Определение полезную точность
         r = 0
-        while str(round(self.err * 10 ** (-ten), r))[-1] == "0" and r < 6:
+        while str(round(self.err * 10 ** (-ten), r))[-1] == "0" and r < 4:
             r += 1
-
         
-        if ten < -40 or -2 < ten < 2:
-            ten = 0
-
+        # В любом случае округляем до полезной точности
         a = round(self.var * 10 ** (-ten), r)
-        
         b = round(self.err * 10 ** (-ten), r)
-        if r < 6:
-            return f"({a}\u00B1{b}e{ten})" if ten != 0 else f"({a}\u00B1{b})"
+
+        if -2 < ten <= 2:
+            return f"({round(a * 10 ** ten, 4)}\u00B1{round(b * 10 ** ten, 4)})" # Дополнительное округление на случай фантомных знаков при умножение на 10 в степени
         else:
-            return f"({a}e{ten})" if ten != 0 else f"({a})"
+            return f"({a}\u00B1{b}e{ten})"
+            
+
     
     def __repr__(self):
         return str(self)
@@ -182,6 +183,10 @@ class Value:
     def __hash__(self):
         return hash(self.var) * int("1" + "0" * int(len(str(hash(self.var))))) + hash(self.err)
 
+q_e = 1.6021766208 * 10 ** -19
+pi = np.pi
+g = Value(9.81, 0.01)
+
 def series_err(var):
     def f(var):
         return Value(var, next(f.it))
@@ -250,6 +255,22 @@ def hi2(x, y):
 
     return k, b
 
-#TODO Проверка работы со всему разными функциями из numpy
-#TODO Функции для замены matplotlib 
-#TODO Правильный вывод чисел
+def errorbar(x, y, title, xlabel, ylabel, fontsize=25):
+    plt.figure(figsize=(16, 9), dpi=254)
+
+    k, b = mls(line, x, y)
+
+    plt.errorbar(x=x, y=y, xerr=x.transform(get_err), yerr=y.transform(get_err), fmt='ko')
+    plt.plot(x, line(x, k, b), color="black")
+
+    plt.title(title, fontsize=fontsize)
+    plt.xlabel(xlabel, fontsize=fontsize)
+    plt.ylabel(ylabel, fontsize=fontsize)
+    plt.grid(True)
+
+    return k, b
+
+#TODO Проверка работы со всему разными функциями из numpy - Вроде все робит
+#TODO Функции для замены matplotlib - Стоит допилить функицонал для нескольких графиков на одной плоскости
+#TODO Правильный вывод чисел - Походу сделано
+#TODO Read_csv с возможностью читать погрешности
