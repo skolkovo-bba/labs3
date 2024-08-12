@@ -1,6 +1,6 @@
 ![alt-текст](https://github.com/skolkovo-bba/labs/blob/main/шапка.png?raw=true)
 
-# Лабораторные Маршруты (22/23)
+# Лабораторные Маршруты
 ### [Первый Семестр](https://old.mipt.ru/upload/medialibrary/3be/marshruty.pdf)
 ### [Второй](https://old.mipt.ru/upload/medialibrary/b39/1kurs-_-vesna23_laby_marshruty.pdf)
 ### [Третий](https://old.mipt.ru/education/chair/physics/S_III/EL-%D0%A2%D0%B5%D0%BC%D1%8B%20%D0%B8%20%D0%BC%D1%80%D1%88%D1%80_2023-21-VIII.pdf)
